@@ -10,9 +10,9 @@ from utils import load_vocabulary
 from utils import extract_kvpairs_in_bioes
 from utils import cal_f1_score
 
-bert_vocab_path = "./bert_model/vocab.txt"
-bert_config_path = "./bert_model/bert_config.json"
-bert_ckpt_path = "./bert_model/chinese_L-12_H-768_A-12.ckpt"
+bert_vocab_path = "../nlp_model/chinese_bert_L-12_H-768_A-12/vocab.txt"
+bert_config_path = "../nlp_model/chinese_bert_L-12_H-768_A-12/bert_config.json"
+bert_ckpt_path = "../nlp_model/chinese_bert_L-12_H-768_A-12/bert_model.ckpt"
 
 # set logging
 log_file_path = "./ckpt/run.log"
@@ -64,7 +64,7 @@ model = MyModel(bert_config=bert_config,
                 vocab_size_bio=len(w2i_bio), 
                 vocab_size_attr=len(w2i_attr), 
                 O_tag_index=w2i_bio["O"],
-                use_crf=False)
+                use_crf=True)
 
 logger.info("model params:")
 params_num_all = 0
@@ -94,7 +94,7 @@ with tf.Session(config=tf_config) as sess:
     losses = []
     batches = 0
     best_f1 = 0
-    batch_size = 32
+    batch_size = 64
 
     while epoches < 30:
         (inputs_seq_batch, 
@@ -194,14 +194,14 @@ with tf.Session(config=tf_config) as sess:
             logger.info("Batches: {}".format(batches))
             logger.info("Loss: {}".format(sum(losses) / len(losses)))
             losses = []
-
-            ckpt_save_path = "./ckpt/model.ckpt.batch{}".format(batches)
-            logger.info("Path of ckpt: {}".format(ckpt_save_path))
-            saver.save(sess, ckpt_save_path)
             
             p, r, f1 = valid(data_processor_valid, max_batches=10)
             if f1 > best_f1:
                 best_f1 = f1
                 logger.info("############# best performance now here ###############")
+
+                ckpt_save_path = "./ckpt/model.ckpt.batch{}_{:.4f}".format(batches, f1)
+                logger.info("Path of ckpt: {}".format(ckpt_save_path))
+                saver.save(sess, ckpt_save_path)
             
             
