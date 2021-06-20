@@ -13,7 +13,7 @@ from utils import cal_f1_score
 bert_vocab_path = "../nlp_model/chinese_bert_L-12_H-768_A-12/vocab.txt"
 bert_config_path = "../nlp_model/chinese_bert_L-12_H-768_A-12/bert_config.json"
 #bert_ckpt_path = "../nlp_model/chinese_bert_L-12_H-768_A-12/bert_model.ckpt"
-bert_ckpt_path = "ckpt/model.ckpt.batch2000_0.5856"
+bert_ckpt_path = "ckpt/model.ckpt.batch6000_0.6236"
 
 # set logging
 log_file_path = "./ckpt/run.log"
@@ -95,7 +95,7 @@ with tf.Session(config=tf_config) as sess:
     losses = []
     batches = 0
     best_f1 = 0
-    batch_size = 32
+    batch_size = 40
 
     while epoches < 30:
         (inputs_seq_batch, 
